@@ -1,4 +1,5 @@
 package me.mmtr.macaw.controller;
+
 import me.mmtr.macaw.data.User;
 import me.mmtr.macaw.data.UserDTO;
 import me.mmtr.macaw.repository.UserRepository;
