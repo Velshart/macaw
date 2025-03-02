@@ -1,5 +1,5 @@
 const stompClient = new StompJs.Client({
-   brokerURL: 'ws://localhost:8081/ws'
+    brokerURL: 'ws://localhost:8081/ws'
 });
 
 let currentUser = "";
@@ -8,7 +8,7 @@ let roomId = null;
 fetchCurrentUserUsername();
 
 function fetchCurrentUserUsername() {
-     fetch('/current-user-username')
+    fetch('/current-user-username')
         .then(response => response.json())
         .then(data => currentUser = data.username)
         .catch(error => alert("An error occurred while fetching user data: " + error));
@@ -17,7 +17,6 @@ function fetchCurrentUserUsername() {
 stompClient.onConnect = () => {
 
     if (!roomId) {
-        console.error("roomId is not set! Cannot subscribe.");
         alert("roomId is not set! Cannot subscribe.");
         return;
     }
@@ -47,7 +46,7 @@ function setConnected(connected) {
 
 function connect() {
     const recipient = $("#recipient").val().trim();
-    if(!recipient) {
+    if (!recipient) {
         alert('Please fill in missing fields.');
         return;
     }
@@ -66,7 +65,8 @@ function disconnect() {
 }
 
 function sendMessage() {
-    const messageContent = $("#message").val().trim();
+    const $messageInput = $("#message");
+    const messageContent = $messageInput.val().trim();
 
     if (!messageContent) {
         alert('Please enter message you want to send.');
@@ -82,9 +82,7 @@ function sendMessage() {
         destination: `/app/chat/${roomId}`,
         body: JSON.stringify(chatMessage)
     });
-
-    //showMessage(chatMessage);
-    $("#message").val("");
+    $messageInput.val("");
 }
 
 function showMessage(message) {
