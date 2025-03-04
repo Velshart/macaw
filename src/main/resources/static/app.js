@@ -17,14 +17,31 @@ function fetchCurrentUserUsername() {
 stompClient.onConnect = () => {
 
     if (!roomId) {
-        alert("roomId is not set! Cannot subscribe.");
+        alert("Cannot subscribe: roomId is not set.");
         return;
     }
 
     setConnected(true);
 
+    const joinMessage = {
+        sender: currentUser,
+        content: `${currentUser} joined the chat.`,
+        type: "INFO"
+    }
+
+    stompClient.publish({
+        destination: `/app/chat/${roomId}`,
+        body: JSON.stringify(joinMessage)
+    });
+
     stompClient.subscribe(`/topic/${roomId}`, (message) => {
-        showMessage(JSON.parse(message.body));
+        const receivedMessage = JSON.parse(message.body);
+
+        if (receivedMessage.type === "INFO") {
+            chatInfo(receivedMessage.content);
+        } else {
+            showMessage(receivedMessage);
+        }
     });
     alert('Connected to room ' + roomId);
 };
@@ -58,6 +75,17 @@ function connect() {
 }
 
 function disconnect() {
+    const leaveMessage = {
+        sender: currentUser,
+        content: `${currentUser} left the chat.`,
+        type: "INFO"
+    }
+
+    stompClient.publish({
+        destination: `/app/chat/${roomId}`,
+        body: JSON.stringify(leaveMessage)
+    });
+
     stompClient.deactivate().then(() => {
         setConnected(false);
         alert("Successfully disconnected from the room.")
@@ -89,6 +117,10 @@ function showMessage(message) {
     $("#chatRoom").append(`<div class="p-2 ${message.sender === currentUser ? 'bg-primary text-white' : 'bg-light'} rounded my-1">
         <strong>${message.sender}:</strong> ${message.content}
     </div>`);
+}
+
+function chatInfo(content) {
+    $("#chatRoom").append(`<div class="p-2 text-muted">${content}</div>`);
 }
 
 $(function () {
