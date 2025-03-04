@@ -29,7 +29,7 @@
                 <button id="connect" class="btn btn-success">Connect</button>
                 <button id="disconnect" class="btn btn-danger" disabled="disabled">Disconnect</button>
 
-                <form th:action="@{/logout}" method="post">
+                <form id="logoutButton" th:action="@{/logout}" method="post">
                     <button type="submit" class="btn btn-danger">Log out</button>
                 </form>
             </div>
@@ -74,6 +74,20 @@
             event.preventDefault();
             document.getElementById("send").click();
         }
+    });
+</script>
+
+<script>
+    document.getElementById("logoutButton").addEventListener("submit", function () {
+        const logoutMessage = {
+            sender: currentUser,
+            content: `${currentUser} logged out.`,
+            type: "INFO"
+        }
+
+        publishMessage(logoutMessage);
+
+        window.location.href = "/logout";
     });
 </script>
 

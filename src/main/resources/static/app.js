@@ -4,7 +4,6 @@ const stompClient = new StompJs.Client({
 
 let currentUser = "";
 let roomId = null;
-
 fetchCurrentUserUsername();
 
 function fetchCurrentUserUsername() {
@@ -28,18 +27,18 @@ async function isUserWithGivenUsernameRegistered(username) {
 
 stompClient.onConnect = () => {
 
+    const joinMessage = {
+        sender: currentUser,
+        content: `${currentUser} joined the chat.`,
+        type: "INFO"
+    }
+
     if (!roomId) {
         alert("Cannot subscribe: roomId is not set.");
         return;
     }
 
     setConnected(true);
-
-    const joinMessage = {
-        sender: currentUser,
-        content: `${currentUser} joined the chat.`,
-        type: "INFO"
-    }
 
     publishMessage(joinMessage);
 
