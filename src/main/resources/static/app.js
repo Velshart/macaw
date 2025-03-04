@@ -11,7 +11,19 @@ function fetchCurrentUserUsername() {
     fetch('/current-user-username')
         .then(response => response.json())
         .then(data => currentUser = data.username)
-        .catch(error => alert("An error occurred while fetching user data: " + error));
+        .catch(error => console.error("An error occurred while fetching user data: ", error));
+}
+
+async function isUserWithGivenUsernameRegistered(username) {
+    try {
+        const response = await fetch('/all-users-usernames');
+        const usernames = await response.json();
+
+        return new Set(usernames).has(username);
+    } catch (error) {
+        console.error("Error during fetching data: ", error)
+        return false;
+    }
 }
 
 stompClient.onConnect = () => {
@@ -42,11 +54,11 @@ stompClient.onConnect = () => {
     });
 };
 stompClient.onWebSocketError = (error) => {
-    alert('WebSocket error: ' + error);
+    console.error('WebSocket error: ', error);
 };
 
 stompClient.onStompError = (frame) => {
-    alert('STOMP error:' + frame.headers['message'] + frame.body);
+    console.error('STOMP error: ', frame.headers['message'] + frame.body);
 };
 
 function setConnected(connected) {
@@ -65,10 +77,17 @@ function connect() {
         return;
     } else if (currentUser === recipient) {
         alert("The recipient's name must be different from the user's name.")
+        return;
     }
-
-    roomId = `chat-room-${[currentUser, recipient].sort().join('-')}`;
-    stompClient.activate();
+    (async () => {
+        const recipientExists = await isUserWithGivenUsernameRegistered(recipient)
+        if (recipientExists) {
+            roomId = `chat-room-${[currentUser, recipient].sort().join('-')}`;
+            stompClient.activate();
+        } else {
+            alert("Recipient with provided username does not exist.")
+        }
+    })();
 }
 
 function disconnect() {
