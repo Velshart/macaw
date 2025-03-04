@@ -29,10 +29,7 @@ stompClient.onConnect = () => {
         type: "INFO"
     }
 
-    stompClient.publish({
-        destination: `/app/chat/${roomId}`,
-        body: JSON.stringify(joinMessage)
-    });
+    publishMessage(joinMessage);
 
     stompClient.subscribe(`/topic/${roomId}`, (message) => {
         const receivedMessage = JSON.parse(message.body);
@@ -43,7 +40,6 @@ stompClient.onConnect = () => {
             showMessage(receivedMessage);
         }
     });
-    alert('Connected to room ' + roomId);
 };
 stompClient.onWebSocketError = (error) => {
     alert('WebSocket error: ' + error);
@@ -56,6 +52,7 @@ stompClient.onStompError = (frame) => {
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
     $("#disconnect").prop("disabled", !connected);
+    $("#message").prop("disabled", !connected);
     $("#chatRoom").toggleClass("d-none", !connected);
     $("#chatControls").toggleClass("d-none", !connected);
     if (!connected) roomId = null;
@@ -66,11 +63,11 @@ function connect() {
     if (!recipient) {
         alert('Please fill in missing fields.');
         return;
+    } else if (currentUser === recipient) {
+        alert("The recipient's name must be different from the user's name.")
     }
 
     roomId = `chat-room-${[currentUser, recipient].sort().join('-')}`;
-    alert("Connecting to room: " + roomId);
-
     stompClient.activate();
 }
 
@@ -81,15 +78,13 @@ function disconnect() {
         type: "INFO"
     }
 
-    stompClient.publish({
-        destination: `/app/chat/${roomId}`,
-        body: JSON.stringify(leaveMessage)
-    });
+    publishMessage(leaveMessage);
 
     stompClient.deactivate().then(() => {
         setConnected(false);
-        alert("Successfully disconnected from the room.")
     });
+
+    $("#recipient").val("");
 }
 
 function sendMessage() {
@@ -97,20 +92,24 @@ function sendMessage() {
     const messageContent = $messageInput.val().trim();
 
     if (!messageContent) {
-        alert('Please enter message you want to send.');
         return;
     }
 
     const chatMessage = {
         sender: currentUser,
-        content: messageContent
+        content: messageContent,
+        type: "CHAT"
     };
 
+    publishMessage(chatMessage);
+    $messageInput.val("");
+}
+
+function publishMessage(message) {
     stompClient.publish({
         destination: `/app/chat/${roomId}`,
-        body: JSON.stringify(chatMessage)
+        body: JSON.stringify(message)
     });
-    $messageInput.val("");
 }
 
 function showMessage(message) {

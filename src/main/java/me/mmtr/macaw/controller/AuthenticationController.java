@@ -28,7 +28,6 @@ public class AuthenticationController {
     public String login(Model model,
                         @RequestParam(value = "error", required = false) String error,
                         @RequestParam(value = "logout", required = false) String logout) {
-
         if (error != null) {
             model.addAttribute("error", "Incorrect username or password provided");
         }

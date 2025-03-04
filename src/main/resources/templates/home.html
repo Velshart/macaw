@@ -11,20 +11,6 @@
             crossorigin="anonymous"
     >
 
-    <script
-            src="https://code.jquery.com/jquery-3.7.1.min.js"
-            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-            crossorigin="anonymous">
-    </script>
-
-    <script
-            src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js">
-    </script>
-
-    <script
-            src="/app.js">
-    </script>
-
 </head>
 <body>
 
@@ -50,7 +36,7 @@
             <div id="chatRoom" class="border p-3 bg-white d-none" style="height: 300px; overflow-y: auto;"></div>
 
             <div id="chatControls" class="input-group mt-3 d-done">
-                <input id="message" type="text" class="form-control" placeholder="Message...">
+                <input id="message" type="text" class="form-control" placeholder="Message..." disabled="disabled">
                 <button id="send" class="btn btn-primary">Send</button>
             </div>
 
@@ -62,5 +48,28 @@
 
 </body>
 
+<script
+        src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous">
+</script>
+
+<script
+        src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js">
+</script>
+
+<script
+        src="/app.js">
+</script>
+
+<script>
+    const input = document.getElementById("message");
+    input.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById("send").click();
+        }
+    });
+</script>
 
 </html>
