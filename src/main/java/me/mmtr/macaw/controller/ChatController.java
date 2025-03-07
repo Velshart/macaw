@@ -15,7 +15,15 @@ public class ChatController {
     public ChatMessage sendMessage(Principal user,
                                    @DestinationVariable String roomId,
                                    ChatMessage message) {
-        if (!roomId.contains(user.getName())) {
+
+        String principalName;
+        if (user != null) {
+            principalName = user.getName();
+        } else {
+            principalName = "unknown";
+        }
+
+        if (!roomId.contains(principalName)) {
             throw new IllegalArgumentException("You are not permitted to enter this room.");
         }
         return message;

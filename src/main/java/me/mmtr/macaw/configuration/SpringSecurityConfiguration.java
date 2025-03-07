@@ -34,6 +34,7 @@ public class SpringSecurityConfiguration {
                         .requestMatchers("/register").permitAll()
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/static/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated()).formLogin(formLogin ->
                         formLogin.loginPage("/login")
                                 .successHandler(new LoginSuccessHandler())
