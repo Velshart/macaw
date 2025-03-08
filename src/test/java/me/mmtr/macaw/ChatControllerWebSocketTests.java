@@ -40,7 +40,7 @@ public class ChatControllerWebSocketTests {
 
         @Override
         public void handleFrame(@NonNull StompHeaders headers, Object payload) {
-            boolean messageInserted = messageQueue.offer((ChatMessage) payload);
+            messageQueue.offer((ChatMessage) payload);
         }
     };
 
